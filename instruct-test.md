@@ -1,6 +1,242 @@
-# LAB 1 -
+# LAB 1 - Create FortiGate test environment manually in GCP Console
+<details>
+* Network Diagram
+
+    ![diagram1](images/network-diagram.jpeg)
+
+***
+
+## Chapter 1 - Setting up the environment
+
+***[Deployment exercise - estimated duration 45min]***
+
+<details>
+
+<summary>In this step we will create the required VPC Networks and security rules needed.  We will also create the FortiGate and Ubuntu server.</summary>
+
+### Task 1 - Log into your GCP Console
+
+* Login by scrolling down to the Google Console Details section.  Make note of the Password and click **Fleet Console**
+
+    ![console1](images/qwiklabs-info-page1.jpg)
+
+* This will take you to your sign in page and pre-populate the User Account information.  Click **Next**
+
+    ![console2](images/console-login-1.jpg)
+
+* Input the previously noted password
+
+    ![console3](images/console-login-2.jpg)
+
+* Accept all popups and warnings.  You are now at your Console Home screen.  Not the Pinned products down the left side of the screen.
+
+    ![console4](images/console-home.jpg)
+
+### Task 2 - Create VPC Networks
+
+#### Tidbit - The GCP approach to VPC Networks is a bit different than other Vendors.  For example: In AWS, a VPC is a collection of Subnets.  VM instances completely reside within a VPC and have NICs in multiple subnets.  By Contrast, in GCP an instance can only have one vNIC within a VPC Network.  These VPC Networks can be divided into Subnets, but a Virtual Machine can only have a vNIC in one of them.  This means that in order to create a standard Untrust/Trust architecture in GCP, you need two separate VPC Networks.
+
+* On the left pane, click on **VPC network**
+
+    ![console5](images/VPC-Network-left-pane.jpg)
+
+* At the top of the screen, click on **CREATE "untrust" VPC NETWORK**
+
+* Input all fields as directed below.
+  
+  **Any Value not listed below will be left as default.**
+
+1. For "Name" use "untrust"
+1. For "Subnet Creation Mode", **Custom** is selected.
+1. Under **New Subnet** name the subnet "untrust-1" and select **us-central1** region from Dropdown
+1. Under **New Subnet** type "192.168.128.0/25" and select **Done**.
+    ![console6](images/untrust-1 subnet.jpg)
+1. Under **Firewall Rules** select **untrust-allow-custom** and click on **EDIT** to the right of the rule.
+1. This will cause a pop up.  
+1. Un-check **Use subnets' IPv4 ranges** and type "0.0.0.0/0" under other IPv4 Ranges.
+    ![console7](images/untrust-allow.jpg)
+1. Click **CONFIRM**
+1. Click **CREATE**
+
+* Repeat the process to create a second VPC Network named "trust" and with a subnet CIDR of "192.168.129.0/25".
+
+#### Tidbit - Normally we would recommend for Customers to lock down their ingress Firewall rules to only allow the Sources and Ports necessary.  In our lab excercise, we left everything open here, just to make things easier.
+
+### Task 3 - Create FortiGate VM
+
+* At the top left of the screen click the Hamburger menu then Select **Compute Engine** > **VM instances**.
+    ![console8](images/compute-engine.jpg)
+
+* Click **CREATE INSTANCE**
+
+  **Any Value not listed below will be left as default.**
+
+1. On the left side of the screen, click **Marketplace**
+1. In the pop up, type FortiGate in the search bar and select the **FortiGate Next-Generation Firewall (PAYG)** option.
+    ![console9](images/marketplace.jpg)
+1. In the next pop up, choose **Launch**
+    ![console10](images/launch-fgt.jpg)
+1. Under **Networking** > **Network interfaces** click on the down arrow next to default.
+    ![console11](images/default-fgt-int.jpg)
+1. Configure the Network as follows and Click **Done**.
+
+    ![console12](images/untrust-nic.jpg)
+1. Under **Networking** > **Network interfaces** click on **ADD NETWORK INTERFACE** and configure as follows.
+    ![console13](images/trust-nic-det.jpg)
+1. At the bottom, check box to accept terms and then click **DEPLOY**.
+    ![console14](images/accept-deploy.jpg)
+1. The **Deployment Manager** screen pops up next.  Make note of the Admin URL and Temporary Admin password.
+
+    ![console15](images/fortigate-temp-pw.jpg)
+
+#### Tidbit - We used ephemeral for the Public IP of the FortiGate on the untrust NIC.  This means that the IP address could change when the FortiGate is rebooted.  To avoid this, you can go to **VPC network** > **IP addresses** and **RESERVER EXTERNAL STATIC ADDRESS**
+
+### Task 4 - Create Ubuntu VM
+
+* Go to **Compute Engine** > **VM instances** and click **CREATE INSTANCE**
+
+  **Any Value not listed below will be left as default.**
+
+1. Choose an appropriate name for the VM.
+1. Under **Boot disk** select **CHANGE**
+1. In the pop up select options as pictured below
+
+    ![console16](images/ubuntu-image.jpg)
+1. Click the down arrow to expand **Advanced options**.
+1. Click the down arrow to expand **Networking**
+1. Under **Network interface**, click the down arrow to expand **default** and change the network settings as follows.  Note that  we are **NOT** assigning an External IP address for this instance.
+
+    ![console17](images/ubuntu-nic.jpg)
+1. Click the down arrow to expand **Management**
+1. Under **Automation** paste the below text into the "Startup script" box.
+1. Click on **CREATE** at the bottom of the page
+
+```sh
+#!/bin/bash
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+echo "Wait for Internet access through the FGTs"
+while ! curl --connect-timeout 3 "http://www.google.com" &> /dev/null
+    do continue
+done
+apt-get update -y
+#install apache2
+apt-get install -y apache2
+service apache2 restart
+/usr/sbin/useradd student1
+echo student1:Fortinet1! | chpasswd
+usermod -aG sudo student1
+sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+service sshd restart
+```
+
+***
+</details>
+
+## Chapter 2 - Configure Routing and Firewall
+
+***[Make it work - estimated duration 15min]***
+
+<details>
+
+<summary>In this step we will add routing, and policies to allow traffic from the Ubuntu server to reach the internet through FortiGate, and allow users to access the Apache2 web page on the server from the internet</summary>
+
+### Task 1 - Route Traffic from trust network to the internet through FortiGate
+
+* From the Hamburger Menu go to **Compute Engine** > **VM instances** and click on the previously created FortiGate.  Under the Details screen, copy the Primary internal IP address for nic1 (trust network).
+
+    ![console18](images/fortigate-interfaces.jpg)
+
+* From the Hamburger Menu go to **VPC Networks** and click on **trust** in the network list.
+
+* In the center of the screen, click  on **ROUTES** and then click **ADD ROUTE**.
+
+    ![console19](images/trust-route-add.jpg)
+
+* Create the default Route to the Fortigate interface
+
+  **Any Value not listed below will be left as default.**
+
+1. Choose an appropriate name.
+1. For "Destination IP range" input "0.0.0.0/0".
+1. Under "Next hop" select **Specify IP address**
+1. Input the fortigate nic1 IP address as "Next hop IP address"
+1. Click **CREATE**
+
+    ![console20](images/default-to-fgt.jpg)
+
+### Task 2 - Create Policy in FortiGate to allow traffic from trust to untrust
+
+* Log into the FortiGate using the  Admin URL and Temporary Admin password which you noted earlier.  You will be prompted to change the password upon initial login.
+
+* Create a firewall policy allowing all traffic from trust-to-untrust.  If you wait for a few minutes, you should start seeing traffic hitting this policy.  This is the Ubuntu instance updating it's packages and installing apache2.
+
+    ![console21](images/trust-to-untrust.jpg)
+
+### Task 3 - Create VIP in FortiGate to allow access to ubuntu server
+
+  **Any Value not listed below will be left as default.**
+
+* Log into the FortiGate and navigate to **Policy & Objects** > ** Virtual IP's
+
+1. Click **Create New** > **Virtual IP**.
+1. Choose an appropriate name.
+1. Choose **port1** from the dropdown next to **Interface**
+1. for **Map to IPv4 address/range** input the IP address of the Ubuntu server you created earlier.  **HINT** - go to **Compute Engine** > **VM instances** to find the ip.
+1. Click to toggle **Port Forwarding**
+1. For **Protocol** select **TCP**
+1. For **Port Mapping Type** select **One to one**
+1. For **External service port** use **8080**
+1. **Map to IPv4 port** should be set to 80
+1. Click **OK** to continue
+
+    ![console22](images/fortigate-vip-http.jpg)
+
+* Navigate to **Policy & Objects** > **Fierwall Policy** and create a policy allowing HTTP traffic in to Ubuntu.
+
+    ![console23](images/vip-in-pol.jpg)
+
+* In your preferred browser, input **http://<fortigate public ip>:8080** (example http://34.72.196.194:8080).  You should get the default Apache2 landing page.
+
+    ![console24](images/apache2.jpg)
+
+#### Tidbit - In this example, we are allowing all IPs inbound and we did not add any security features to our policy.  In a live environment, we would very likely lock this down to specific Source IP addresses as well as add IPS to our policy.  For even better security web servers should be protected by FortiWeb
+
+* **Congratulations!** You have completed the GCP-Basic portion of this training.
+
+***
+  </details>
+
+***
+
+## Quiz
 
 
+### Question 1
+
+* A VM Instance in GCP can have multiple interfaces in the same VPC Network.  (True or False)
+
+<details> 
+
+<summary>Answer</summary>
+
+* **False** - VMs can only have a single interface per VPC Network.
+
+</details>
+
+## Question 2
+
+* By default, External IP Addresses associated with vNICs in GCP are preserved across reboot (True or False)
+
+<details> 
+
+<summary>Answer</summary>
+
+* **False** - By default.  Ephemeral External IP Addresses are assigned to vNICs in GCP.
+
+</details>
+    
+    </details>    
+    
 ***
 
 # LAB 2 - FortiGate: Automating deployment and configuration using Terraform
