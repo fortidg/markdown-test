@@ -1,6 +1,7 @@
 # LAB 1 - Create FortiGate test environment manually in GCP Console
 
 <details>
+    
 * Network Diagram
 
     ![diagram1](images/network-diagram.jpeg)
@@ -236,7 +237,7 @@ service sshd restart
 
 </details>
     
-    </details>    
+</details>    
     
 ***
 
