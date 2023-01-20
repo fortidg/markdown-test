@@ -780,11 +780,11 @@ Congratulations, you have successfully configured the VPC Peering. The skills an
 
  <details>
      
- In previous labs, we built a Cloud on-ramp using two FortiGates deployed as a High Availability pair sandwiched between two Load Balancers.  We also built a remote site using a single FortiGate and Ubuntu server.  The next step is to securely connect the remote location with the cloud on-ramp.  In the following excercises, we will configure the IPsec overlay.  BGP will be used to share routes between locations.  Once the overlay is in place, we will configure SD-WAN to monitor SLA
+In previous labs, we built a Cloud on-ramp using two FortiGates deployed as a High Availability pair sandwiched between two Load Balancers.  We also built a remote site using a single FortiGate and Ubuntu server.  The next step is to securely connect the remote location with the cloud on-ramp.  In the following excercises, we will configure the IPsec overlay.  BGP will be used to share routes between locations.  Once the overlay is in place, we will configure SD-WAN to monitor SLA
 
 * Network Diagram
 
-    ![diagram1](images/network-diagram.jpeg)
+    ![diagram1](https://github.com/fortidg/markdown-test/blob/main/images/network-diagram.jpeg)
 
 ***
 
@@ -808,23 +808,23 @@ gcloud compute forwarding-rules create udp-ipsec --backend-service=projects/<pro
 
 * From the GCP console dashboard, select click on the cursor **>_** at the top of the screen.  This will open a **CLOUD SHELL Terminal** at the bottom of the screen.
 
-    ![overlay1](images/open-shell.jpg)
+    ![overlay1](https://github.com/fortidg/markdown-test/blob/main/images/open-shell.jpg)
 
 * Get the project-id by copying it from the cloud shell prompt.  We do not need the open and close parentheses.
 
-    ![overlay2](images/get-project.jpg)
+    ![overlay2](https://github.com/fortidg/markdown-test/blob/main/images/get-project.jpg)
 
 * Get the lb-ip.  Under hamburger menu  select MORE PRODUCTS > Network services > **Load balancing**.  In the center of the screen, Click on LOAD BALANCERS > **fgt-qlabs-bes-elb-us-central1**.
 
-    ![overlay3](images/load-balancing.jpg)
+    ![overlay3](https://github.com/fortidg/markdown-test/blob/main/images/load-balancing.jpg)
 
 * In the center of the screen, under **Frontend** copy the IP address
 
-    ![overlay4](images/frontend-ip.jpg)
+    ![overlay4](https://github.com/fortidg/markdown-test/blob/main/images/frontend-ip.jpg)
 
 * Once you have the project-id and lb-ip, update the sdk command from earlier and input it into the cloud shell.  Below is an example of what that command should look like.
 
-    ![overlay5](images/sdk-sample.jpg)
+    ![overlay5](https://github.com/fortidg/markdown-test/blob/main/images/sdk-sample.jpg)
 
 * You should now see the new rule under **Frontend**
 
@@ -834,7 +834,7 @@ gcloud compute forwarding-rules create udp-ipsec --backend-service=projects/<pro
 
 * Log into the active FortiGate of the cloud on-ramp HA pair.  On the left pane, select **Network** > **Inerfaces**.  Click on port1 and select **Edit**  Under Address, toggle the **Secondary IP address** button and input the lb-ip from earlier.
 
-    ![overlay6](images/secondary-ip.jpg)
+    ![overlay6](https://github.com/fortidg/markdown-test/blob/main/images/secondary-ip.jpg)
 
 * Open a CLI console in the active FortiGate by clicking on the cursor **>_** icon or using SSH to the public management IP.  Copy the below configurations into your favorite text editor and "set local-gw" to the lb-ip. Once completed, copy and paste thes configurations into the cli console.
 
@@ -1042,9 +1042,9 @@ get router info routing-table bgp
 
 * Below are the expected outputs
 
-    ![overlay7](images/hub-bgp-sum.jpg)
+    ![overlay7](https://github.com/fortidg/markdown-test/blob/main/images/hub-bgp-sum.jpg)
 
-    ![overlay8](images/spoke-bgp-sum.jpg)    
+    ![overlay8](https://github.com/fortidg/markdown-test/blob/main/images/spoke-bgp-sum.jpg)    
 
 * Ensure continuity from Hub by pinging the remote site Ubuntu server.
 
@@ -1087,11 +1087,11 @@ end
 
 * Navigate to **Network > SD-WAN** and click on **Create New > SD-WAN Member** From the **Interface** drop down, choose **port1**.  Leave all other values as default.
 
-    ![overlay9](images/new-sdwan-member.jpg)
+    ![overlay9](https://github.com/fortidg/markdown-test/blob/main/images/new-sdwan-member.jpg)
 
 * Navigate to **Network > SD-WAN** and click on **Create New > SD-WAN Member** From the **Interface** drop down, choose **HUB1**.  In the **SD-WAN Zone** drop down, click **Create** and name the new zone "overlay".  Leave all other values as default and click **OK** 
 
-    ![overlay10](images/hub1-sdwan.jpg)
+    ![overlay10](https://github.com/fortidg/markdown-test/blob/main/images/hub1-sdwan.jpg)
 
 * Open a Console connection and add the below firewall policies.
 
@@ -1152,15 +1152,15 @@ end
 
 * Navigate to **Network > SD-WAN > Performance SLAs** and select the test named **Default_Google_Search"**.  Click **Edit**. Under **Participants** select **All SD-WAN Members**.  Leave all other values as default and click **OK**.  
 
-    ![overlay11](images/google-sla.jpg)
+    ![overlay11](https://github.com/fortidg/markdown-test/blob/main/images/google-sla.jpg)
 
 * You may need to refresh the browser in order to see the SLA measurements.  Click on **Default_Google Search**.  You should now see performance data updating in real time for both the **HUB1** and **port1** interfaces.
 
-    ![overlay12](images/google-mon.jpg)
+    ![overlay12](https://github.com/fortidg/markdown-test/blob/main/images/google-mon.jpg)
 
 * In the fires two steps, we used the default Googel performance SLA monitor.  While it's not unheard of to monitor a Public internet site over an IPSec tunnel to the cloud, a more realistic scenario would be to monitor a resource in our own cloud "Data Center"  Below is an example of a custom performance SLA monitoring hour Hub Ubunt Server (created in lab 3).
 
-    ![overlay13](images/ubu-hub-mon.jpg)
+    ![overlay13](https://github.com/fortidg/markdown-test/blob/main/images/ubu-hub-mon.jpg)
 
 #### useful link - https://docs.fortinet.com/document/fortigate/7.2.3/administration-guide/584396/performance-sla
 
@@ -1168,7 +1168,7 @@ end
 
 * Navigate to **Network > SD-WAN > SD-WAN Rules**.  Click **Create new**  Feel free to play around with the Values here.  At a minimum you will need to provide **Name**, **Destination Address or Internet Service**, **Interface selection strategy** and **Interface and/or Zone preference**.  **Note: The minimum required information will change, depending on which selection strategy you choose.  Our example below uses Best Quality, which additionally, requires us to choos a Measured SLA and Quality Criteria**
 
-    ![overlay14](images/oci-rule.jpg)
+    ![overlay14](https://github.com/fortidg/markdown-test/blob/main/images/oci-rule.jpg)
 
 #### useful link - https://docs.fortinet.com/document/fortigate/7.2.3/administration-guide/716691/sd-wan-rules 
 
