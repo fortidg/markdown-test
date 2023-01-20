@@ -985,7 +985,7 @@ end
 
 </details>
     
-    </details>
+</details>
 
 ##  Clean-up
 To revert changes and remove resources you created in this lab do the following:
