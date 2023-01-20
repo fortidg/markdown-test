@@ -776,9 +776,7 @@ Congratulations, you have successfully configured the VPC Peering. The skills an
 </details>
 
 ***
-# LAB 4 - 
-
-# Create Network Overlay and Configure SD-WAN Components
+# LAB 4 -  Create Network Overlay and Configure SD-WAN Components
 
  <details>
      
