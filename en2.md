@@ -1,6 +1,6 @@
 # LAB 1 - Create FortiGate test environment manually in GCP Console
 
-<details>
+
     
 * Network Diagram
 
@@ -12,9 +12,9 @@
 
 ***[Deployment exercise - estimated duration 45min]***
 
-<details>
 
-<summary>In this step we will create the required VPC Networks and security rules needed.  We will also create the FortiGate and Ubuntu server.</summary>
+
+In this step we will create the required VPC Networks and security rules needed.  We will also create the FortiGate and Ubuntu server.
 
 ### Task 1 - Log into your GCP Console
 
@@ -132,15 +132,15 @@ service sshd restart
 ```
 
 ***
-</details>
+
 
 ## Chapter 2 - Configure Routing and Firewall
 
 ***[Make it work - estimated duration 15min]***
 
-<details>
 
-<summary>In this step we will add routing, and policies to allow traffic from the Ubuntu server to reach the internet through FortiGate, and allow users to access the Apache2 web page on the server from the internet</summary>
+
+In this step we will add routing, and policies to allow traffic from the Ubuntu server to reach the internet through FortiGate, and allow users to access the Apache2 web page on the server from the internet
 
 ### Task 1 - Route Traffic from trust network to the internet through FortiGate
 
@@ -206,7 +206,7 @@ service sshd restart
 * **Congratulations!** You have completed the GCP-Basic portion of this training.
 
 ***
-  </details>
+  
 
 ***
 
@@ -217,33 +217,33 @@ service sshd restart
 
 * A VM Instance in GCP can have multiple interfaces in the same VPC Network.  (True or False)
 
-<details> 
+ 
 
-<summary>Answer</summary>
+Answer
 
 * **False** - VMs can only have a single interface per VPC Network.
 
-</details>
+
 
 ## Question 2
 
 * By default, External IP Addresses associated with vNICs in GCP are preserved across reboot (True or False)
 
-<details> 
+ 
 
-<summary>Answer</summary>
+Answer
 
 * **False** - By default.  Ephemeral External IP Addresses are assigned to vNICs in GCP.
 
-</details>
+
     
-</details>    
+    
     
 ***
 
 # LAB 2 - FortiGate: Automating deployment and configuration using Terraform
 
-<details>
+
 
 ## Overview
 This lab is intended for network administrators looking to integrate firewall management with DevOps practices and workflow. First part of the lab focuses on deploying a pair of FortiGate virtual appliances using Terraform and bootstrapping their configuration to automatically build a multi-zone HA cluster. Second part deploys a simple web application and leverages fortios terraform provider to include FortiGate configuration changes necessary to protect that application.
@@ -556,13 +556,13 @@ In many organizations mixing manual and managed configuration is not desired. It
 ### Congratulations!
 Congratulations, you have successfully deployed and configured FortiGates in Google Cloud using terraform. The skills and concepts you have learned can help you build secure environments leveraging network security experience of FortiGuard Labs combined with cloud-native workflows, eliminating the requirement to interactively log into the firewall management console.
 
-</details>
+
 
 ***
 
 # LAB 3 - VPC Peering: Create/Configure VPC Peering between two Virtual Private Cloud (VPC) networks
 
-<details>
+
     
 ## Google Cloud VPC Network Peering connects two Virtual Private Cloud (VPC) networks so that resources in each network can communicate with each other
 
@@ -773,12 +773,12 @@ exec ping <INTERNAL_IP_ADDRESS>
 ### Congratulations!
 Congratulations, you have successfully configured the VPC Peering. The skills and concepts you have learned can help you build secure environments leveraging network security experience of FortiGuard Labs combined with cloud-native workflows, eliminating the requirement to interactively log into the firewall management console.
 
-</details>
+
 
 ***
 # LAB 4 -  Create Network Overlay and Configure SD-WAN Components
 
- <details>
+ 
      
 In previous labs, we built a Cloud on-ramp using two FortiGates deployed as a High Availability pair sandwiched between two Load Balancers.  We also built a remote site using a single FortiGate and Ubuntu server.  The next step is to securely connect the remote location with the cloud on-ramp.  In the following excercises, we will configure the IPsec overlay.  BGP will be used to share routes between locations.  Once the overlay is in place, we will configure SD-WAN to monitor SLA
 
@@ -792,9 +792,9 @@ In previous labs, we built a Cloud on-ramp using two FortiGates deployed as a Hi
 
 ***[Deployment exercise - estimated duration 45min]***
 
-<details>
 
-<summary>In this chapter, we will create the dialup IPsec VPN hub on the on-ramp FortiGate and configure the remote site to connect to it.   </summary>
+
+In this chapter, we will create the dialup IPsec VPN hub on the on-ramp FortiGate and configure the remote site to connect to it.   
 
 ### Task 1 - Add Forwarding Rule to the Load Balancer
 
@@ -1060,15 +1060,15 @@ execute ping 172.20.1.5
 
 ***
 
-</details>
+
 
 ## Chapter 2 - Configure SD-WAN
 
 ***[Make it work - estimated duration 15min]***
 
-<details>
 
-<summary>Now that we have configured the overlay, we will add the "WAN" interface (port1) and the IPsec HUB1 interface to SD-WAN.  We will then create SLA monitoring in the remote site.</summary>
+
+Now that we have configured the overlay, we will add the "WAN" interface (port1) and the IPsec HUB1 interface to SD-WAN.  We will then create SLA monitoring in the remote site.
 
 ### Task 1 - Add interfaces to SD-WAN
 
@@ -1175,7 +1175,7 @@ end
 * **Congratulations!** You have completed this course!  Please answer the questions below.
 
 ***
-  </details>
+  
 
 ***
 
@@ -1186,13 +1186,13 @@ end
 
 * All GCP features can be configured from the GUI Console  (True or False)
 
-<details> 
+ 
 
-<summary>Answer</summary>
+Answer
 
 * **False** - As we saw with load balancer forwarding rules, some configurations are only available using the gcloud cli.
 
-</details>
+
 
 ## Question 2
 
@@ -1202,27 +1202,27 @@ end
     c) set mode-cfg enable
     d) set peertype any
 
-<details> 
+ 
 
-<summary>Answer</summary>
+Answer
 
 * **C** - set mode-cfg enable along with  set ipv4-start-ip, set ipv4-end-ip and set ipv4-netmask are required on the hub to enable this feature.
 
-</details>
+
 
 ## Question 3
 
 * You must use the Zone ID in security policy for any interface which is added to SD-WAN (TRUE or False)
 
-<details> 
+ 
 
-<summary>Answer</summary>
+Answer
 
 * **True** - once an interface is part of SD-WAN, you can no longer assign policy direcly to that interface.
 
-</details>
+
     
-</details>
+
 
 ##  Clean-up
 To revert changes and remove resources you created in this lab do the following:
