@@ -561,7 +561,7 @@ Congratulations, you have successfully deployed and configured FortiGates in Goo
 ***
 
 # LAB 3 - VPC Peering: Create/Configure VPC Peering between two Virtual Private Cloud (VPC) networks
-Google Cloud VPC Network Peering connects two Virtual Private Cloud (VPC) networks so that resources in each network can communicate with each other
+## Google Cloud VPC Network Peering connects two Virtual Private Cloud (VPC) networks so that resources in each network can communicate with each other
 
 <details>
 
